@@ -6,7 +6,6 @@
 [![React](https://img.shields.io/badge/React-18-61DAFB.svg)](https://reactjs.org/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-pgvector-336791.svg)](https://github.com/pgvector/pgvector)
 [![Ollama](https://img.shields.io/badge/Ollama-Local%20LLM-black.svg)](https://ollama.ai/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 **NyayaPath** is a legal AI platform designed specifically for Indian Consumer Protection Law under the **Consumer Protection Act, 2019 (CPA 2019)** and the **Consumer Protection (E-Commerce) Rules, 2020**.
 
