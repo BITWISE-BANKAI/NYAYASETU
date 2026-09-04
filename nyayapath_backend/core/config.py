@@ -1,0 +1,19 @@
+from pydantic_settings import BaseSettings
+
+class Settings(BaseSettings):
+    # Database
+    database_url: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/nyayapath"
+    
+    # Ollama configurations
+    ollama_host: str = "http://localhost:11434"
+    drafter_model: str = "nyayapath-drafter"
+    fact_extractor_model: str = "qwen2.5:3B-instruct"
+    vision_model: str = "qwen2.5vl:7b"
+    embedding_model: str = "qwen3-embedding:0.6b"    
+    # Thresholds
+    evidence_strength_threshold: int = 60
+
+    class Config:
+        env_file = ".env"
+
+settings = Settings()

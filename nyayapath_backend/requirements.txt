@@ -1,0 +1,15 @@
+fastapi
+uvicorn
+sqlalchemy
+asyncpg
+pgvector
+pydantic
+pydantic-settings
+jinja2
+instructor
+ollama
+pytest
+pytest-asyncio
+pdfplumber
+pytesseract
+Pillow

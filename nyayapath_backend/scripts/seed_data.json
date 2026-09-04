@@ -1,0 +1,228 @@
+{
+  "_source": "Consumer Protection Act, 2019 (Act No. 35 of 2019) — official gazette text, via indiacode.nic.in/bitstream/123456789/18964/1/cpa.pdf",
+  "_note": "Starter set only — covers the highest-priority clauses your PDR identified for Stage-4 grounding. E-Commerce Rules 2020, CCPA Dark Patterns Guidelines 2023, and NCDRC precedents are NOT yet included — pull those separately from consumeraffairs.nic.in / egazette.gov.in. Do not fabricate their text; if a rule isn't sourced yet, leave it out of pgvector rather than approximating.",
+  "_schema_note": "chunk_id/parent_ref are staging keys only — replace with real UUIDs at insert time, mapping parent_ref -> the inserted parent row's id for the metadata.parent_id field.",
+
+  "chunks": [
+    {
+      "chunk_id": "cpa2019_s2_definitions_parent",
+      "chunk_type": "parent_section",
+      "document_title": "Consumer Protection Act, 2019",
+      "chunk_text": "Section 2 — Definitions (Chapter I, Preliminary). In this Act, unless the context otherwise requires: ... (9) 'consumer rights' includes the right to be protected against hazardous goods/services, the right to be informed, the right to choice at competitive prices, the right to be heard, the right to seek redressal against unfair or restrictive trade practices, and the right to consumer awareness; (10) 'defect' means any fault, imperfection or shortcoming in the quality, quantity, potency, purity or standard which is required to be maintained by or under any law, contract, or as claimed by the trader, in relation to goods or a product; (11) 'deficiency' means any fault, imperfection, shortcoming or inadequacy in the quality, nature and manner of performance required to be maintained in relation to a service, and includes any act of negligence, omission or commission causing loss or injury, and deliberate withholding of relevant information; (34) 'product liability' means the responsibility of a product manufacturer or product seller to compensate for harm caused to a consumer by a defective product or deficient service relating thereto; (35) 'product liability action' means a complaint filed before a District/State/National Commission claiming compensation for such harm; (47) 'unfair trade practice' means a trade practice which adopts unfair or deceptive methods, including false representations of standard/quality/quantity, false warranties, misleading price representations, non-disclosure, and related practices enumerated in sub-clauses (i)-(ix).",
+      "metadata": {
+        "document_type": "Bare Act",
+        "hierarchy_path": "Chapter I > Section 2 (Definitions)",
+        "effective_date": "2020-07-20",
+        "is_current": true,
+        "jurisdiction": "All"
+      }
+    },
+    {
+      "chunk_id": "cpa2019_s2_9_consumer_rights",
+      "parent_ref": "cpa2019_s2_definitions_parent",
+      "chunk_type": "child_clause",
+      "document_title": "Consumer Protection Act, 2019",
+      "chunk_text": "Section 2(9) — 'consumer rights' includes: (i) the right to be protected against marketing of goods/services hazardous to life and property; (ii) the right to be informed about quality, quantity, potency, purity, standard and price to protect against unfair trade practices; (iii) the right to be assured access to a variety of goods/services at competitive prices; (iv) the right to be heard and to have consumer interests considered at appropriate fora; (v) the right to seek redressal against unfair or restrictive trade practices or unscrupulous exploitation; (vi) the right to consumer awareness.",
+      "metadata": {
+        "document_type": "Bare Act",
+        "hierarchy_path": "Chapter I > Section 2 > Clause (9) 'consumer rights'",
+        "effective_date": "2020-07-20",
+        "is_current": true,
+        "jurisdiction": "All"
+      }
+    },
+    {
+      "chunk_id": "cpa2019_s2_10_defect",
+      "parent_ref": "cpa2019_s2_definitions_parent",
+      "chunk_type": "child_clause",
+      "document_title": "Consumer Protection Act, 2019",
+      "chunk_text": "Section 2(10) — 'defect' means any fault, imperfection or shortcoming in the quality, quantity, potency, purity or standard which is required to be maintained by or under any law for the time being in force or under any contract, express or implied, or as is claimed by the trader in any manner whatsoever in relation to any goods or product, and the expression 'defective' shall be construed accordingly.",
+      "metadata": {
+        "document_type": "Bare Act",
+        "hierarchy_path": "Chapter I > Section 2 > Clause (10) 'defect'",
+        "effective_date": "2020-07-20",
+        "is_current": true,
+        "jurisdiction": "All"
+      }
+    },
+    {
+      "chunk_id": "cpa2019_s2_11_deficiency",
+      "parent_ref": "cpa2019_s2_definitions_parent",
+      "chunk_type": "child_clause",
+      "document_title": "Consumer Protection Act, 2019",
+      "chunk_text": "Section 2(11) — 'deficiency' means any fault, imperfection, shortcoming or inadequacy in the quality, nature and manner of performance which is required to be maintained by or under any law for the time being in force, or has been undertaken to be performed by a person in pursuance of a contract or otherwise in relation to any service, and includes: (i) any act of negligence or omission or commission by such person which causes loss or injury to the consumer; and (ii) deliberate withholding of relevant information by such person to the consumer.",
+      "metadata": {
+        "document_type": "Bare Act",
+        "hierarchy_path": "Chapter I > Section 2 > Clause (11) 'deficiency'",
+        "effective_date": "2020-07-20",
+        "is_current": true,
+        "jurisdiction": "All"
+      }
+    },
+    {
+      "chunk_id": "cpa2019_s2_47_unfair_trade_practice",
+      "parent_ref": "cpa2019_s2_definitions_parent",
+      "chunk_type": "child_clause",
+      "document_title": "Consumer Protection Act, 2019",
+      "chunk_text": "Section 2(47) — 'unfair trade practice' means a trade practice which, for promoting the sale, use or supply of goods or services, adopts an unfair method or unfair/deceptive practice, including: false representation of standard/quality/quantity/grade of goods or services; falsely representing second-hand/reconditioned goods as new; false or misleading guarantees not based on adequate testing; misleading price representations; disparaging another's goods/services; publishing bait advertisements; not issuing a bill or cash memo; refusing to take back defective goods or withdraw deficient services and refund within 30 days of the stipulated period; and disclosing a consumer's confidential personal information without lawful basis.",
+      "metadata": {
+        "document_type": "Bare Act",
+        "hierarchy_path": "Chapter I > Section 2 > Clause (47) 'unfair trade practice'",
+        "effective_date": "2020-07-20",
+        "is_current": true,
+        "jurisdiction": "All"
+      }
+    },
+
+    {
+      "chunk_id": "cpa2019_ch6_product_liability_parent",
+      "chunk_type": "parent_section",
+      "document_title": "Consumer Protection Act, 2019",
+      "chunk_text": "Chapter VI — Product Liability (Sections 82-87). Applies to every claim for compensation under a product liability action for harm caused by a defective product (Sec 82). A product liability action may be brought against a product manufacturer, product service provider, or product seller (Sec 83). A manufacturer is liable if the product has a manufacturing defect, a design defect, deviates from manufacturing specs, fails to conform to an express warranty, or lacks adequate usage instructions/warnings (Sec 84) — and is liable even without proof of negligence or fraud. A service provider is liable for faulty/imperfect/deficient/inadequate service, negligence, withheld information, inadequate warnings, or non-conformance to warranty (Sec 85). A seller who is not the manufacturer is liable only in specific circumstances: substantial control over design/manufacture, own alteration causing harm, own independent express warranty, unidentifiable manufacturer, or failure of reasonable care in assembly/inspection (Sec 86). Exceptions: no action lies for misuse/alteration after sale; manufacturer not liable if warnings were properly given to an employer/intermediate purchaser/expert supervisor, or if the consumer was under unprescribed intoxicant influence, or for dangers that are obvious/commonly known (Sec 87).",
+      "metadata": {
+        "document_type": "Bare Act",
+        "hierarchy_path": "Chapter VI (Sections 82-87)",
+        "effective_date": "2020-07-20",
+        "is_current": true,
+        "jurisdiction": "All"
+      }
+    },
+    {
+      "chunk_id": "cpa2019_s84_manufacturer_liability",
+      "parent_ref": "cpa2019_ch6_product_liability_parent",
+      "chunk_type": "child_clause",
+      "document_title": "Consumer Protection Act, 2019",
+      "chunk_text": "Section 84(1) — A product manufacturer shall be liable in a product liability action if: (a) the product contains a manufacturing defect; or (b) the product is defective in design; or (c) there is a deviation from manufacturing specifications; or (d) the product does not conform to the express warranty; or (e) the product fails to contain adequate instructions of correct usage to prevent harm, or a warning regarding improper/incorrect usage. Section 84(2) — the manufacturer is liable even if he proves he was not negligent or fraudulent in making the express warranty.",
+      "metadata": {
+        "document_type": "Bare Act",
+        "hierarchy_path": "Chapter VI > Section 84 (Liability of product manufacturer)",
+        "effective_date": "2020-07-20",
+        "is_current": true,
+        "jurisdiction": "All"
+      }
+    },
+    {
+      "chunk_id": "cpa2019_s85_service_provider_liability",
+      "parent_ref": "cpa2019_ch6_product_liability_parent",
+      "chunk_type": "child_clause",
+      "document_title": "Consumer Protection Act, 2019",
+      "chunk_text": "Section 85 — A product service provider shall be liable in a product liability action if: (a) the service was faulty, imperfect, deficient or inadequate in quality/nature/manner of performance as required by law, contract or otherwise; or (b) there was an act of omission, commission, negligence, or conscious withholding of information that caused harm; or (c) the service provider did not issue adequate instructions or warnings to prevent harm; or (d) the service did not conform to the express warranty or contract terms.",
+      "metadata": {
+        "document_type": "Bare Act",
+        "hierarchy_path": "Chapter VI > Section 85 (Liability of product service provider)",
+        "effective_date": "2020-07-20",
+        "is_current": true,
+        "jurisdiction": "All"
+      }
+    },
+
+    {
+      "chunk_id": "cpa2019_s39_reliefs_parent",
+      "chunk_type": "parent_section",
+      "document_title": "Consumer Protection Act, 2019",
+      "chunk_text": "Section 39 — Findings of District Commission. Where satisfied that a complaint is proved, the District Commission may order the opposite party to: remove the defect; replace the goods; refund the price/charges with interest; pay compensation for loss or injury due to negligence (including punitive damages); pay compensation under a Chapter VI product liability action; remove defects/deficiencies; discontinue the unfair/restrictive trade practice; not offer or withdraw hazardous goods; cease manufacture of hazardous goods; pay a sum (minimum 25% of value) where numerous unidentifiable consumers suffered loss; issue a corrective advertisement; provide adequate costs to parties; and cease/desist from misleading advertisement.",
+      "metadata": {
+        "document_type": "Bare Act",
+        "hierarchy_path": "Chapter IV > Section 39 (Findings/Reliefs of District Commission)",
+        "effective_date": "2020-07-20",
+        "is_current": true,
+        "jurisdiction": "All"
+      }
+    },
+    {
+      "chunk_id": "cpa2019_s69_limitation",
+      "chunk_type": "parent_section",
+      "document_title": "Consumer Protection Act, 2019",
+      "chunk_text": "Section 69(1) — The District Commission, State Commission or National Commission shall not admit a complaint unless it is filed within two years from the date on which the cause of action has arisen. Section 69(2) — a complaint may still be entertained after that period if the complainant satisfies the Commission that there was sufficient cause for the delay, provided the Commission records its reasons for condoning the delay in writing.",
+      "metadata": {
+        "document_type": "Bare Act",
+        "hierarchy_path": "Chapter IV > Section 69 (Limitation period)",
+        "effective_date": "2020-07-20",
+        "is_current": true,
+        "jurisdiction": "All"
+      }
+    },
+
+    {
+      "chunk_id": "cpa2019_jurisdiction_bare_act_SUPERSEDED",
+      "chunk_type": "parent_section",
+      "document_title": "Consumer Protection Act, 2019",
+      "chunk_text": "[BARE ACT TEXT - PECUNIARY FIGURES SUPERSEDED, KEPT FOR REFERENCE ONLY] Section 34(1): District Commission jurisdiction where consideration does not exceed Rs. 1 crore. Section 47(1)(a)(i): State Commission jurisdiction where consideration exceeds Rs. 1 crore but does not exceed Rs. 10 crore. Section 58(1)(a)(i): National Commission jurisdiction where consideration exceeds Rs. 10 crore. NOTE: these figures were revised by a Central Government notification dated 30 December 2021, which lowered the breakpoints to Rs. 50 lakh (District) and Rs. 2 crore (State/National split) — see the companion 'current' chunk below. Do not let Stage 4 cite this chunk's figures without the amendment.",
+      "metadata": {
+        "document_type": "Bare Act",
+        "hierarchy_path": "Chapter IV > Sections 34, 47, 58 (Pecuniary jurisdiction - ORIGINAL 2019 figures)",
+        "effective_date": "2020-07-20",
+        "is_current": false,
+        "jurisdiction": "All"
+      }
+    },
+    {
+      "chunk_id": "cpa2019_s35_complaint_manner",
+      "parent_ref": "cpa2019_s2_definitions_parent",
+      "chunk_type": "child_clause",
+      "document_title": "Consumer Protection Act, 2019",
+      "chunk_text": "Section 35(1) — Manner in which complaint shall be made. A consumer dispute complaint in relation to any goods sold or delivered or agreed to be sold or delivered or any service provided or agreed to be provided may be filed with a District Commission by: (a) the consumer to whom such goods are sold or delivered or agreed to be sold or delivered or such service is provided or agreed to be provided; (b) any recognised consumer association; (c) one or more consumers, where there are numerous consumers having the same interest; or (d) the Central Government, the Central Authority or the State Government.",
+      "metadata": {
+        "document_type": "Bare Act",
+        "hierarchy_path": "Chapter IV > Section 35 (Manner in which complaint shall be made)",
+        "effective_date": "2020-07-20",
+        "is_current": true,
+        "jurisdiction": "All"
+      }
+    },
+    {
+      "chunk_id": "ecommerce_rules_2020_parent",
+      "chunk_type": "parent_section",
+      "document_title": "Consumer Protection (E-Commerce) Rules, 2020",
+      "chunk_text": "Consumer Protection (E-Commerce) Rules, 2020 (notified under the Consumer Protection Act, 2019). Applies to all goods and services bought or sold over digital or electronic networks, including marketplace e-commerce entities and sellers. Defines marketplace e-commerce entity as an information technology platform facilitating transactions between buyers and sellers. Sets mandatory duties for marketplace entities and sellers regarding grievance redressal, return/refund, disclosure of legal seller details, and prohibition of unfair trade practices.",
+      "metadata": {
+        "document_type": "Rules",
+        "hierarchy_path": "Consumer Protection (E-Commerce) Rules, 2020",
+        "effective_date": "2020-07-23",
+        "is_current": true,
+        "jurisdiction": "All"
+      }
+    },
+    {
+      "chunk_id": "ecommerce_rules_2020_rule4_marketplace",
+      "parent_ref": "ecommerce_rules_2020_parent",
+      "chunk_type": "child_clause",
+      "document_title": "Consumer Protection (E-Commerce) Rules, 2020",
+      "chunk_text": "Rule 4 & 5 — Duties and Liabilities of Marketplace E-Commerce Entities. Every marketplace e-commerce entity shall: (1) provide in a clear and accessible manner on its platform details about the legal name, principal address, customer care number, and grievance officer; (2) acknowledge receipt of consumer complaint within forty-eight hours and redress the complaint within one month; (3) display prominently all relevant details of registered sellers including legal identity, address, customer reviews, and contact information; (4) not refuse to take back goods, or withdraw or discontinue services, if such goods or services are defective, deficient, spurious or delivered late; (5) facilitate return and refund where goods/services do not meet represented standards or specifications.",
+      "metadata": {
+        "document_type": "Rules",
+        "hierarchy_path": "Rules 4 & 5 > Duties of Marketplace E-Commerce Entities",
+        "effective_date": "2020-07-23",
+        "is_current": true,
+        "jurisdiction": "All"
+      }
+    },
+    {
+      "chunk_id": "ecommerce_rules_2020_rule6_seller",
+      "parent_ref": "ecommerce_rules_2020_parent",
+      "chunk_type": "child_clause",
+      "document_title": "Consumer Protection (E-Commerce) Rules, 2020",
+      "chunk_text": "Rule 6 — Duties of Sellers on Marketplace. No seller on an e-commerce marketplace shall: (1) adopt any unfair trade practice whether in the course of the offer on the platform or otherwise; (2) falsely represent himself as a consumer and post fake reviews or misrepresent quality of goods/services; (3) refuse to take back goods, or discontinue services, or refuse to refund consideration paid, if such goods are defective, deficient, spurious, or if the characteristics or features do not conform to what was represented on the platform; (4) guarantee that the goods/services have clear terms of express warranty and comply with all legal obligations.",
+      "metadata": {
+        "document_type": "Rules",
+        "hierarchy_path": "Rule 6 > Duties of Sellers on Marketplace",
+        "effective_date": "2020-07-23",
+        "is_current": true,
+        "jurisdiction": "All"
+      }
+    },
+    {
+      "chunk_id": "cpa2019_jurisdiction_CURRENT_PLACEHOLDER",
+      "chunk_type": "parent_section",
+      "document_title": "Notification revising pecuniary jurisdiction under CPA 2019",
+      "chunk_text": "[PLACEHOLDER - fetch and replace with the verbatim notification text before ingesting] Per the Central Government notification dated 30 December 2021 (issued under the proviso to Sections 34(1), 47(1)(a)(i) and 58(1)(a)(i) of the CPA 2019): District Commission jurisdiction is revised to complaints where consideration paid does not exceed Rs. 50,00,000 (fifty lakh); State Commission jurisdiction covers consideration exceeding Rs. 50,00,000 but not exceeding Rs. 2,00,00,000 (two crore); National Commission jurisdiction covers consideration exceeding Rs. 2,00,00,000. Source the exact gazette notification text from egazette.gov.in before treating this as production-ready.",
+      "metadata": {
+        "document_type": "Notification",
+        "hierarchy_path": "Amendment to Sections 34, 47, 58 (Pecuniary jurisdiction - REVISED, effective 2021)",
+        "effective_date": "2021-12-30",
+        "is_current": true,
+        "jurisdiction": "All"
+      }
+    }
+  ]
+}

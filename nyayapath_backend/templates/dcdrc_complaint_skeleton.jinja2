@@ -1,0 +1,70 @@
+BEFORE THE {{ forum_name|upper }} AT {{ forum_city|upper }}
+COMPLAINT NO. ______ OF 20__
+
+IN THE MATTER OF:
+
+{{ complainant_name }}
+... Complainant
+
+VERSUS
+
+{% if opposite_parties and opposite_parties|length > 0 %}
+{% for op in opposite_parties %}
+{{ loop.index }}. {{ op.party_title }}
+   [{{ op.party_role }}]
+   {{ op.address_or_note }}
+
+{% endfor %}
+... Opposite Parties
+{% else %}
+{{ seller_name }}
+... Opposite Party / Seller
+{% endif %}
+
+COMPLAINT UNDER SECTION 35 OF THE CONSUMER PROTECTION ACT, 2019
+
+RESPECTFULLY SHOWETH:
+
+I. STATEMENT OF FACTS
+{% for paragraph in statement_of_facts_narrative %}
+{{ loop.index }}. {{ paragraph }}
+{% endfor %}
+{% if transaction_amount %}
+The total transaction amount involved in this dispute is Rs. {{ transaction_amount }}.
+{% endif %}
+
+II. LEGAL GROUNDS AND VIOLATIONS
+The Complainant submits that the Opposite Party is liable under the Consumer Protection Act, 2019 on the following grounds:
+{% for ground in legal_grounds %}
+{{ loop.index }}. {{ ground.section_title }} ({{ ground.cpa_section_ref }}):
+{{ ground.applicability_justification }}
+{% endfor %}
+
+III. JURISDICTION AND LIMITATION
+1. This Hon'ble Commission has the requisite jurisdiction to entertain this complaint under the Consumer Protection Act, 2019.
+2. The complaint is filed within the period of limitation as prescribed under Section 69 of the Act.
+
+IV. ANNEXURES
+The Complainant relies upon the following documents in support of the complaint:
+{% for annexure in annexure_descriptions %}
+Annexure A-{{ loop.index }}: {{ annexure }}
+{% endfor %}
+
+V. PRAYER
+In view of the facts and circumstances stated above, the Complainant respectfully prays that this Hon'ble Commission may be pleased to:
+{% for prayer in prayer_items %}
+{{ loop.index }}. {{ prayer }}
+{% endfor %}
+And pass such other and further orders as this Hon'ble Commission may deem fit and proper in the interest of justice.
+
+
+PLACE: {{ forum_city }}
+DATE: _______________
+COMPLAINANT
+
+
+VERIFICATION
+I, {{ complainant_name }}, the Complainant above named, do hereby verify that the contents of paragraphs 1 to {{ statement_of_facts_narrative|length }} of the Statement of Facts are true and correct to my knowledge and belief, and nothing material has been concealed therefrom.
+Verified at {{ forum_city }} on this ___ day of ________, 20__.
+
+COMPLAINANT

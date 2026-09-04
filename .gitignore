@@ -1,0 +1,129 @@
+# ==============================================================================
+# NyayaPath - Root .gitignore
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# Environment & Secrets (NEVER COMMIT)
+# ------------------------------------------------------------------------------
+.env
+.env.*
+*.env
+!.env.example
+*.pem
+*.key
+*.cert
+*.pfx
+
+# ------------------------------------------------------------------------------
+# Python & Virtual Environments
+# ------------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environments
+.venv/
+venv/
+ENV/
+env/
+env.bak/
+venv.bak/
+.venv*/
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.ruff_cache/
+.mypy_cache/
+
+# ------------------------------------------------------------------------------
+# Node.js & Frontend
+# ------------------------------------------------------------------------------
+**/node_modules/
+**/dist/
+**/dist-ssr/
+**/*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ------------------------------------------------------------------------------
+# Database & Local Storage
+# ------------------------------------------------------------------------------
+*.db
+*.sqlite
+*.sqlite3
+*.log
+logs/
+*.pid
+uploads/
+temp/
+scratch/
+
+# ------------------------------------------------------------------------------
+# Model Weights & Large Binaries
+# ------------------------------------------------------------------------------
+*.bin
+*.pt
+*.pth
+*.onnx
+*.safetensors
+*.gguf
+
+# ------------------------------------------------------------------------------
+# IDE & Operating System Files
+# ------------------------------------------------------------------------------
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+[Dd]esktop.ini
+
+# Editors
+.vscode/
+!.vscode/extensions.json
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+*~
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# AI Agent Specific
+.agents/
+.gemini/
