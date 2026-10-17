@@ -11,14 +11,24 @@ logger = logging.getLogger(__name__)
 class RetrievalError(Exception):
     pass
 
-# Initialize InLegalBERT as a SentenceTransformer for bi-encoder reranking if available
-try:
-    from sentence_transformers import SentenceTransformer, util
-    reranker_model = SentenceTransformer("law-ai/InLegalBERT")
-except Exception as e:
-    logger.info(f"InLegalBERT reranker not loaded (optional component): {e}")
-    reranker_model = None
-    util = None
+# Lazy loader for optional InLegalBERT bi-encoder reranker
+_reranker_model = None
+_util = None
+_reranker_attempted = False
+
+def get_reranker():
+    global _reranker_model, _util, _reranker_attempted
+    if not _reranker_attempted:
+        _reranker_attempted = True
+        try:
+            from sentence_transformers import SentenceTransformer, util
+            _reranker_model = SentenceTransformer("law-ai/InLegalBERT")
+            _util = util
+        except Exception as e:
+            logger.info(f"InLegalBERT reranker not loaded (optional component): {e}")
+            _reranker_model = None
+            _util = None
+    return _reranker_model, _util
 
 async def retrieve_parent_statutes(db: AsyncSession, query_text: str, top_k: int = 20, rerank_top_k: int = 3) -> List[RerankedResult]:
     """
@@ -52,11 +62,55 @@ async def retrieve_parent_statutes(db: AsyncSession, query_text: str, top_k: int
         result = await db.execute(query, {"query_vector": str(query_vector), "top_k": top_k})
         chunks = result.fetchall()
     except Exception as e:
-        logger.error(f"Error fetching from pgvector: {e}")
-        raise RetrievalError(f"Database query failed: {e}")
+        logger.warning(f"Database query failed on pgvector ({e}), falling back to seed statute corpus")
+        from services.assistant_service import _get_seed_corpus
+        corpus = _get_seed_corpus()
+        keywords = set(query_text.lower().split())
+        scored = []
+        for chk in corpus:
+            txt = (chk.get("chunk_text") or "").lower()
+            sc = sum(1 for kw in keywords if kw in txt)
+            if sc > 0:
+                scored.append((sc, chk))
+        scored.sort(key=lambda x: x[0], reverse=True)
+        fallback_results = []
+        for sc, chk in scored[:rerank_top_k]:
+            meta = chk.get("metadata", {})
+            fallback_results.append(RerankedResult(
+                chunk_id=chk.get("id", 1),
+                chunk_text=chk.get("chunk_text", ""),
+                similarity_score=round(min(sc / 10.0, 0.95), 4),
+                hierarchy_path=meta.get("hierarchy_path", chk.get("document_title", "")),
+                chunk_type=meta.get("chunk_type", "child_clause"),
+                parent_id=meta.get("parent_id"),
+                cross_encoder_score=round(min(sc / 10.0, 0.95), 4)
+            ))
+        return fallback_results
 
     if not chunks:
-        return []
+        from services.assistant_service import _get_seed_corpus
+        corpus = _get_seed_corpus()
+        keywords = set(query_text.lower().split())
+        scored = []
+        for chk in corpus:
+            txt = (chk.get("chunk_text") or "").lower()
+            sc = sum(1 for kw in keywords if kw in txt)
+            if sc > 0:
+                scored.append((sc, chk))
+        scored.sort(key=lambda x: x[0], reverse=True)
+        fallback_results = []
+        for sc, chk in scored[:rerank_top_k]:
+            meta = chk.get("metadata", {})
+            fallback_results.append(RerankedResult(
+                chunk_id=chk.get("id", 1),
+                chunk_text=chk.get("chunk_text", ""),
+                similarity_score=round(min(sc / 10.0, 0.95), 4),
+                hierarchy_path=meta.get("hierarchy_path", chk.get("document_title", "")),
+                chunk_type=meta.get("chunk_type", "child_clause"),
+                parent_id=meta.get("parent_id"),
+                cross_encoder_score=round(min(sc / 10.0, 0.95), 4)
+            ))
+        return fallback_results
 
     # Prepare candidates for reranking
     candidate_texts = [row.chunk_text for row in chunks]
@@ -89,6 +143,7 @@ async def cross_encoder_rerank(query: str, candidate_chunks: List[str]) -> List[
     Since it is a base model without a classification head, we use it as a SentenceTransformer 
     and compute cosine similarities between the query and candidates.
     """
+    reranker_model, util = get_reranker()
     if reranker_model is None:
         logger.warning("Reranker model is not loaded. Returning zeros.")
         return [0.0] * len(candidate_chunks)

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { HelpCircle, Check, Edit2, HelpCircle as QuestionIcon, AlertTriangle } from 'lucide-react';
 import { NeuButton } from '../ui/NeuButton';
 import { NeuInput, NeuTextArea } from '../ui/NeuInput';
@@ -6,6 +6,10 @@ import { NeuInput, NeuTextArea } from '../ui/NeuInput';
 export function FieldWithProvenance({ field, onConfirm, onSaveValue, onMarkUnknown, onOpenHelp }) {
   const [isEditing, setIsEditing] = useState(false);
   const [draftValue, setDraftValue] = useState(field.value !== null && field.value !== undefined ? String(field.value) : '');
+
+  useEffect(() => {
+    setDraftValue(field.value !== null && field.value !== undefined ? String(field.value) : '');
+  }, [field.value]);
 
   const handleSave = () => {
     onSaveValue(field.field_id, draftValue);
@@ -69,9 +73,9 @@ export function FieldWithProvenance({ field, onConfirm, onSaveValue, onMarkUnkno
               fontWeight: '700' 
             }}
             onClick={() => onOpenHelp(field)}
-            title="Ask AI to explain this field from official legal sources"
+            title="Ask NyayaSetu assistant about this field and legal grounding"
           >
-            <HelpCircle size={15} /> Explain
+            <HelpCircle size={15} /> Ask NyayaSetu
           </button>
         </div>
       </div>

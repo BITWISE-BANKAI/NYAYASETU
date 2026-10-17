@@ -13,7 +13,10 @@ class Settings(BaseSettings):
     # Thresholds
     evidence_strength_threshold: int = 60
 
+    debug: bool = True
+
     class Config:
         env_file = ".env"
+        extra = "ignore"
 
 settings = Settings()

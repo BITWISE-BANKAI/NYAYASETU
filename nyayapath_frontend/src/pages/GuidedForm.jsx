@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { 
   ArrowLeft, ArrowRight, AlertTriangle, 
-  Download, Copy, RefreshCw, Scale, ShieldCheck
+  Download, Copy, RefreshCw, Scale
 } from 'lucide-react';
 import { NeuCard } from '../components/ui/NeuCard';
 import { NeuButton } from '../components/ui/NeuButton';
 import { FormStepper } from '../components/guided_form/FormStepper';
 import { FieldWithProvenance } from '../components/guided_form/FieldWithProvenance';
-import { RAGHelpDrawer } from '../components/guided_form/RAGHelpDrawer';
+import { AssistantChatDrawer } from '../components/guided_form/AssistantChatDrawer';
 import { EvidenceChecklistSection } from '../components/guided_form/EvidenceChecklistSection';
 import { ConflictResolverModal } from '../components/guided_form/ConflictResolverModal';
 
@@ -26,7 +26,7 @@ export function GuidedForm() {
   const [draftResult, setDraftResult] = useState(null);
   const [copied, setCopied] = useState(false);
 
-  // 1. Fetch form state
+  // 1. Fetch form state & existing drafted complaint
   const loadState = async () => {
     try {
       const res = await fetch(`http://localhost:8000/api/v1/cases/${caseId}/guided-form`);
@@ -34,11 +34,40 @@ export function GuidedForm() {
       if (data.success) {
         setState(data.data);
       }
+
+      // Check if complaint is already drafted
+      try {
+        const compRes = await fetch(`http://localhost:8000/api/v1/cases/${caseId}/complaint`);
+        const compData = await compRes.json();
+        if (compData.success && compData.data?.rendered_complaint) {
+          setDraftResult(compData.data);
+        }
+      } catch (err) {
+        // Draft not ready yet, perfectly normal
+      }
     } catch (err) {
       console.error('Failed to load guided form state:', err);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleAutoFillSampleDetails = async () => {
+    const sampleFields = [
+      { id: 'complainant_name', val: 'Arjun Kumar' },
+      { id: 'complainant_address', val: 'Flat 402, Shanti Vihar, Indiranagar, Bengaluru, Karnataka - 560038' },
+      { id: 'complainant_phone', val: '9876543210' },
+      { id: 'complainant_email', val: 'arjun.kumar@gmail.com' },
+      { id: 'complainant_district', val: 'Bengaluru Urban' },
+      { id: 'product_or_service', val: 'Samsung 55-inch 4K Smart TV' },
+      { id: 'transaction_amount_inr', val: 54999.0 },
+      { id: 'purchase_or_incident_date', val: '2024-08-15' },
+    ];
+    for (const f of sampleFields) {
+      await handleSaveValue(f.id, f.val);
+      await handleConfirmField(f.id);
+    }
+    await runValidation();
   };
 
   useEffect(() => {
@@ -85,6 +114,25 @@ export function GuidedForm() {
       if (json.success) setState(json.data);
     } catch (e) {
       console.error('Error marking unknown:', e);
+    }
+  };
+
+  // Apply suggested value from assistant as an unconfirmed suggestion
+  const handleApplySuggestion = async (fieldId, suggestedValue) => {
+    try {
+      const res = await fetch(`http://localhost:8000/api/v1/cases/${caseId}/guided-form/fields/${fieldId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          value: suggestedValue,
+          status: 'suggested',
+          user_confirmed: false
+        })
+      });
+      const json = await res.json();
+      if (json.success) setState(json.data);
+    } catch (e) {
+      console.error('Error applying assistant suggestion:', e);
     }
   };
 
@@ -275,6 +323,54 @@ export function GuidedForm() {
             {activeStep === 8 ? (
               // Step 8: Evidence Checklist & Final Review
               <div>
+                {/* Verified Form Fields Summary */}
+                <div style={{ marginBottom: '32px', borderBottom: '1px solid var(--shadow-dark)', paddingBottom: '24px' }}>
+                  <div className="flex justify-between items-center" style={{ marginBottom: '16px' }}>
+                    <div>
+                      <h4 className="text-card-title" style={{ fontSize: '16px', margin: 0 }}>
+                        Complaint Particulars & Entered Information Review
+                      </h4>
+                      <p className="text-helper" style={{ margin: '4px 0 0', fontSize: '12px' }}>
+                        Review details gathered across Steps 1 to 7 before final statutory validation and drafting.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '16px' }}>
+                    {state.sections.slice(0, 7).map((sec) => (
+                      <div key={sec.section_id} className="neu-inset" style={{ padding: '14px', borderRadius: '12px', background: 'var(--surface-soft)' }}>
+                        <div className="flex justify-between items-center" style={{ marginBottom: '8px', borderBottom: '1px solid var(--line)', paddingBottom: '6px' }}>
+                          <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--brand)' }}>
+                            Step {sec.step_number}: {sec.title.split(' ')[0]}
+                          </span>
+                          <button 
+                            type="button"
+                            onClick={() => setActiveStep(sec.step_number)}
+                            style={{ background: 'transparent', border: 'none', color: 'var(--color-understand)', fontSize: '11px', fontWeight: 600, cursor: 'pointer' }}
+                          >
+                            Edit →
+                          </button>
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                          {sec.fields.slice(0, 3).map((fld) => (
+                            <div key={fld.field_id} style={{ fontSize: '12px' }}>
+                              <span className="text-helper" style={{ display: 'block', fontSize: '10px' }}>{fld.label}</span>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <span style={{ fontWeight: fld.user_confirmed ? 600 : 400, color: fld.value ? 'var(--ink)' : 'var(--color-danger)' }}>
+                                  {fld.value_type === 'money' && fld.value ? `₹ ${Number(fld.value).toLocaleString('en-IN')}` : (fld.value ? String(fld.value) : 'Not Provided')}
+                                </span>
+                                {fld.user_confirmed && (
+                                  <span style={{ fontSize: '10px', color: 'var(--color-act)', fontWeight: 700 }}>✓</span>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
                 <EvidenceChecklistSection 
                   checklist={state.evidence_checklist} 
                   onUpdateStatus={async (itemId, newStatus) => {
@@ -311,6 +407,11 @@ export function GuidedForm() {
                             <li key={idx}>{e.message}</li>
                           ))}
                         </ul>
+                        <div style={{ marginTop: '12px' }}>
+                          <NeuButton onClick={handleAutoFillSampleDetails} style={{ fontSize: '12px' }}>
+                            ✨ Auto-fill Sample Citizen Details for Testing
+                          </NeuButton>
+                        </div>
                       </div>
                     )}
 
@@ -423,50 +524,19 @@ export function GuidedForm() {
 
         </div>
 
-        {/* Right Column: Contextual Legal Grounding Drawer / Sidebar */}
+        {/* Right Column: Context-Aware Assistant Chat Drawer */}
         <div style={{ gridColumn: 'span 4' }}>
-          {activeHelpField ? (
-            <RAGHelpDrawer 
-              activeField={activeHelpField}
-              caseId={caseId}
-              onClose={() => setActiveHelpField(null)}
-            />
-          ) : (
-            // Default Sidebar Summary
-            <div className="flex flex-col gap-3" style={{ position: 'sticky', top: '90px' }}>
-              
-              <NeuCard>
-                <div className="flex items-center gap-2" style={{ marginBottom: '12px' }}>
-                  <ShieldCheck size={18} style={{ color: 'var(--color-act)' }} />
-                  <h4 className="text-card-title" style={{ fontSize: '15px', margin: 0 }}>
-                    Legal RAG Guidance
-                  </h4>
-                </div>
-                <p className="text-helper" style={{ fontSize: '13px', margin: '0 0 16px 0' }}>
-                  Click <strong>"Explain"</strong> next to any form field to retrieve official citations from the Consumer Protection Act, 2019 and e-Jagriti filing guidelines.
-                </p>
-                <div className="neu-inset" style={{ padding: '12px', borderRadius: '10px', fontSize: '12px', color: 'var(--text-secondary)' }}>
-                  💡 <em>Every explanation is grounded in indexed government gazette passages.</em>
-                </div>
-              </NeuCard>
-
-              <NeuCard>
-                <h4 className="text-card-title" style={{ fontSize: '15px', marginBottom: '8px' }}>
-                  Opposite Parties in Scope
-                </h4>
-                <p className="text-helper" style={{ fontSize: '12px', marginBottom: '12px' }}>
-                  NyayaSetu maintains multi-entity separation to avoid generic party claims:
-                </p>
-                <ul className="text-helper" style={{ paddingLeft: '16px', margin: 0, fontSize: '12px' }}>
-                  <li><strong>Manufacturer</strong> (Sec 84 liability)</li>
-                  <li><strong>Marketplace</strong> (Rules 4 & 5 duties)</li>
-                  <li><strong>Registered Merchant</strong> (Tax invoice)</li>
-                  <li><strong>Authorized Service Center</strong> (Sec 85)</li>
-                </ul>
-              </NeuCard>
-
-            </div>
-          )}
+          <AssistantChatDrawer 
+            activeField={activeHelpField}
+            currentStep={activeStep}
+            caseId={caseId}
+            onClose={() => setActiveHelpField(null)}
+            onApplySuggestion={handleApplySuggestion}
+            onOpenFieldEditor={(fieldId) => {
+              const el = document.getElementById(`field-${fieldId}`);
+              if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }}
+          />
         </div>
 
       </div>

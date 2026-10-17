@@ -97,6 +97,8 @@ scratch/
 *.onnx
 *.safetensors
 *.gguf
+finetuned_model/
+*.zip
 
 # ------------------------------------------------------------------------------
 # IDE & Operating System Files

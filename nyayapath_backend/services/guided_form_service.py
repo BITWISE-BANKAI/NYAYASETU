@@ -359,6 +359,13 @@ def _build_initial_state_from_facts(case_id: UUID, extracted_facts: Optional[Dic
                     kind=ProvenanceKind.EXISTING_CASE,
                     source_label="Extracted from your grievance narrative"
                 )
+            elif fid == "complainant_district" and facts.get("complainant_city"):
+                val = facts.get("complainant_city")
+                status = FieldStatus.SUGGESTED
+                prov = FieldProvenance(
+                    kind=ProvenanceKind.EXISTING_CASE,
+                    source_label="Extracted from your grievance narrative"
+                )
             elif fid == "refund_amount_inr" and facts.get("transaction_amount_inr"):
                 # Default refund prayer suggestion from transaction amount
                 val = facts.get("transaction_amount_inr")
@@ -458,17 +465,83 @@ def _calc_completion(sections: List[FormSection]) -> int:
     return int((completed_fields / total_fields) * 100)
 
 
+DEMO_CASE_UUIDS = {
+    "demo-matter-1": UUID("00000000-0000-0000-0000-000000000001"),
+    "demo-matter-2": UUID("00000000-0000-0000-0000-000000000002"),
+    "demo-matter-3": UUID("00000000-0000-0000-0000-000000000003"),
+}
+
 async def get_or_initialize_guided_form(db: AsyncSession, case_id: UUID) -> GuidedFormState:
     """
     Retrieves the guided form state for a case, or initializes it from extracted facts.
+    Auto-seeds demo cases if requested.
     """
     case = await db.get(GrievanceCase, case_id)
     if not case:
-        raise ValueError(f"Case {case_id} not found")
-        
+        if case_id in DEMO_CASE_UUIDS.values():
+            case = GrievanceCase(
+                id=case_id,
+                status="complete",
+                raw_intake_text="Purchased Samsung 55-inch 4K Smart TV for Rs. 54,999 on 2024-08-15 from Amazon. Stopped working after 2 months. Service center claimed physical damage and refused warranty.",
+                extracted_facts={
+                    "product_or_service": "Samsung 55-inch 4K Smart TV",
+                    "transaction_amount_inr": 54999.0,
+                    "purchase_or_incident_date": "2024-08-15",
+                    "manufacturer_name": "Samsung India Electronics Pvt. Ltd.",
+                    "ecommerce_platform": "Amazon Seller Services Pvt. Ltd.",
+                    "merchant_seller_name": "Appario Retail Pvt. Ltd.",
+                    "service_center_name": "Samsung Authorized Plaza Service Center",
+                    "issue_summary_neutral": "Display panel failure within 2 months of purchase.",
+                    "seller_response_summary": "Service center alleged user physical damage and refused warranty.",
+                    "evidence_mentioned": ["invoice", "job_sheet"]
+                },
+                evidence_strength_score=80
+            )
+            db.add(case)
+            await db.commit()
+        else:
+            raise ValueError(f"Case {case_id} not found")
+
+    # If facts have not been extracted yet but raw intake text is available, extract on-the-fly
+    if (not case.extracted_facts or not any(case.extracted_facts.values())) and case.raw_intake_text:
+        try:
+            from services.stage2_fact_service import extract_facts
+            facts = await extract_facts(case.raw_intake_text, {})
+            case.extracted_facts = facts.model_dump()
+            case.evidence_strength_score = facts.evidence_strength_score
+            case.status = 'stage3_rag'
+            await db.commit()
+        except Exception as e:
+            logger.warning(f"Could not extract facts on the fly in get_or_initialize_guided_form: {e}")
+
     if case.guided_form_state:
         try:
-            return GuidedFormState(**case.guided_form_state)
+            state = GuidedFormState(**case.guided_form_state)
+            # Reconcile unpopulated/missing fields from case.extracted_facts
+            if case.extracted_facts:
+                updated = False
+                for sec in state.sections:
+                    for f in sec.fields:
+                        if (f.value is None or str(f.value).strip() == "") and not f.user_confirmed and f.status != FieldStatus.UNKNOWN:
+                            val = case.extracted_facts.get(f.field_id)
+                            if val is None and f.field_id == "complainant_district":
+                                val = case.extracted_facts.get("complainant_city")
+                            elif val is None and f.field_id == "refund_amount_inr":
+                                val = case.extracted_facts.get("transaction_amount_inr")
+
+                            if val is not None:
+                                f.value = val
+                                f.status = FieldStatus.SUGGESTED
+                                f.provenance = FieldProvenance(
+                                    kind=ProvenanceKind.EXISTING_CASE,
+                                    source_label="Extracted from your grievance narrative"
+                                )
+                                updated = True
+                if updated:
+                    state.completion_percentage = _calc_completion(state.sections)
+                    case.guided_form_state = state.model_dump(mode="json")
+                    await db.commit()
+            return state
         except Exception as e:
             logger.warning(f"Failed to deserialize existing guided_form_state, re-initializing: {e}")
 
@@ -490,6 +563,7 @@ async def patch_guided_form_field(
 ) -> GuidedFormState:
     """
     Updates an individual field's value, status, or user confirmation.
+    Synchronizes authoritative extracted_facts and re-renders complaint petition.
     """
     state = await get_or_initialize_guided_form(db, case_id)
     case = await db.get(GrievanceCase, case_id)
@@ -532,6 +606,73 @@ async def patch_guided_form_field(
     state.completion_percentage = _calc_completion(state.sections)
     state.last_saved_at = datetime.now(timezone.utc)
     
+    # Synchronize case.extracted_facts with the newly manually added/edited information
+    facts_dict = dict(case.extracted_facts or {})
+    if mark_unknown:
+        facts_dict[field_id] = None
+    elif value is not None:
+        facts_dict[field_id] = value
+        if field_id == "complainant_district":
+            facts_dict["complainant_city"] = value
+
+    # Recompute missing mandatory fields
+    missing_fields = []
+    for sec in state.sections:
+        for fld in sec.fields:
+            if fld.is_required and (fld.value is None or str(fld.value).strip() == "") and fld.status != FieldStatus.UNKNOWN:
+                missing_fields.append(fld.field_id)
+    facts_dict["missing_mandatory_fields"] = missing_fields
+    case.extracted_facts = facts_dict
+
+    # Synchronize rendered complaint petition if case is in progress or completed
+    try:
+        from schemas.complaint_generation import StructuredLegalSlots
+        from schemas.extracted_facts import ExtractedConsumerFacts
+        from services.template_service import render_final_dcdrc_complaint
+
+        field_map = {fld.field_id: fld.value for s in state.sections for fld in s.fields}
+        facts_obj = ExtractedConsumerFacts(
+            complainant_name=field_map.get("complainant_name"),
+            complainant_address=field_map.get("complainant_address"),
+            complainant_phone=field_map.get("complainant_phone"),
+            complainant_email=field_map.get("complainant_email"),
+            complainant_city=field_map.get("complainant_district") or field_map.get("complainant_city"),
+            product_or_service=field_map.get("product_or_service") or "Consumer Electronics Device",
+            transaction_amount_inr=float(field_map.get("transaction_amount_inr") or 0.0),
+            purchase_or_incident_date=field_map.get("purchase_or_incident_date"),
+            invoice_number=field_map.get("invoice_number"),
+            seller_or_company_name=field_map.get("manufacturer_name") or field_map.get("ecommerce_platform") or "Opposite Party",
+            ecommerce_platform=field_map.get("ecommerce_platform"),
+            manufacturer_name=field_map.get("manufacturer_name"),
+            merchant_seller_name=field_map.get("merchant_seller_name"),
+            service_center_name=field_map.get("service_center_name"),
+            issue_summary_neutral=field_map.get("issue_summary_neutral") or "Defective product with failure to provide warranty repair.",
+            seller_response_summary=field_map.get("seller_response_summary"),
+            missing_mandatory_fields=missing_fields,
+            evidence_strength_score=case.evidence_strength_score or 75
+        )
+
+        if case.structured_slots:
+            slots_obj = StructuredLegalSlots(**case.structured_slots)
+        else:
+            slots_obj = StructuredLegalSlots(
+                statement_of_facts_narrative=[
+                    f"The Complainant purchased {facts_obj.product_or_service} for consideration of Rs. {facts_obj.transaction_amount_inr:,.0f} on {facts_obj.purchase_or_incident_date or 'the date of invoice'}.",
+                    f"The product developed serious defects ({facts_obj.issue_summary_neutral}) during the normal warranty period.",
+                    f"The Opposite Party failed to repair, replace, or refund despite repeated formal requests ({facts_obj.seller_response_summary or 'Service denied'})."
+                ],
+                legal_grounds=[],
+                prayer_items=[
+                    f"Direct the Opposite Party to refund the sum of Rs. {facts_obj.transaction_amount_inr:,.0f} under Section 39(1)(c) of the Consumer Protection Act, 2019.",
+                    "Award reasonable compensation for mental agony and harassment under Section 39(1)(d).",
+                    "Award litigation costs of the proceedings under Section 39(1)(m)."
+                ],
+                annexure_descriptions=["Tax Invoice / Proof of Purchase", "Grievance Communications / Notice"]
+            )
+        case.rendered_complaint = render_final_dcdrc_complaint(facts_obj, slots_obj)
+    except Exception as e:
+        logger.warning(f"Could not auto-re-render complaint upon field patch: {e}")
+
     case.guided_form_state = state.model_dump(mode="json")
     await db.commit()
     return state

@@ -4,6 +4,8 @@ COMPLAINT NO. ______ OF 20__
 IN THE MATTER OF:
 
 {{ complainant_name }}
+{% if complainant_address %}Address: {{ complainant_address }}{% endif %}
+{% if complainant_phone or complainant_email %}Contact: {{ complainant_phone or '' }}{% if complainant_phone and complainant_email %} | {% endif %}{{ complainant_email or '' }}{% endif %}
 ... Complainant
 
 VERSUS
@@ -29,8 +31,12 @@ I. STATEMENT OF FACTS
 {% for paragraph in statement_of_facts_narrative %}
 {{ loop.index }}. {{ paragraph }}
 {% endfor %}
-{% if transaction_amount %}
-The total transaction amount involved in this dispute is Rs. {{ transaction_amount }}.
+{% if transaction_amount or purchase_date or invoice_number or product_or_service %}
+PARTICULARS OF DISPUTED TRANSACTION:
+- Product / Service: {{ product_or_service or '[Not specified in current records]' }}
+- Consideration Paid: Rs. {{ transaction_amount or '[Not specified]' }}
+- Purchase / Transaction Date: {{ purchase_date or '[Date as per invoice]' }}
+- Tax Invoice / Bill No.: {{ invoice_number or '[Invoice number not specified in current records]' }}
 {% endif %}
 
 II. LEGAL GROUNDS AND VIOLATIONS
