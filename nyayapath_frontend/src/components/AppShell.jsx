@@ -14,7 +14,7 @@ export function AppShell() {
         
         {/* Logo */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
-          <h1 className="text-display" style={{ margin: 0, fontSize: '24px', cursor: 'pointer' }} onClick={() => navigate('/')}>NyayaPath</h1>
+          <h1 className="text-display" style={{ margin: 0, fontSize: '24px', cursor: 'pointer' }} onClick={() => navigate('/')}>NyayaSetu</h1>
         </div>
 
         {/* Action Buttons */}

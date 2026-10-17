@@ -1,3 +1,4 @@
+from typing import List, Optional, Dict, Any
 from fastapi import APIRouter, Depends, BackgroundTasks, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from uuid import UUID, uuid4
@@ -100,3 +101,127 @@ async def get_complaint(case_id: UUID, db: AsyncSession = Depends(get_db_session
             "missing_mandatory_fields": case.extracted_facts.get("missing_mandatory_fields", []) if case.extracted_facts else []
         }
     )
+
+# ==========================================
+# NyayaSetu Consumer Bridge: Guided Form Endpoints
+# ==========================================
+
+from schemas.guided_form import (
+    GuidedFormState, PatchFieldRequest, FieldGuidanceRequest,
+    FieldGuidanceResponse, ResolveConflictRequest, EvidenceChecklistItem,
+    GuidedFormValidationResponse
+)
+from services.guided_form_service import (
+    get_or_initialize_guided_form, patch_guided_form_field,
+    resolve_conflict_item, get_field_guidance,
+    validate_guided_form_state, generate_draft_from_guided_form
+)
+
+@router.get("/{case_id}/guided-form", response_model=ApiResponse[GuidedFormState])
+async def get_guided_form(case_id: UUID, db: AsyncSession = Depends(get_db_session)):
+    """
+    Retrieves the guided form state with section navigation, provenance, and statuses.
+    """
+    try:
+        state = await get_or_initialize_guided_form(db, case_id)
+        return ApiResponse(success=True, data=state)
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch guided form: {e}")
+
+@router.patch("/{case_id}/guided-form/fields/{field_id}", response_model=ApiResponse[GuidedFormState])
+async def patch_field(case_id: UUID, field_id: str, request: PatchFieldRequest, db: AsyncSession = Depends(get_db_session)):
+    """
+    Saves/updates an individual form field with value, status, or confirmation.
+    """
+    try:
+        updated_state = await patch_guided_form_field(
+            db=db,
+            case_id=case_id,
+            field_id=field_id,
+            value=request.value,
+            status=request.status,
+            user_confirmed=request.user_confirmed,
+            mark_unknown=request.mark_unknown or False
+        )
+        return ApiResponse(success=True, data=updated_state)
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to update field: {e}")
+
+@router.post("/{case_id}/guided-form/guidance", response_model=ApiResponse[FieldGuidanceResponse])
+async def field_guidance(case_id: UUID, request: FieldGuidanceRequest, db: AsyncSession = Depends(get_db_session)):
+    """
+    Context-aware RAG: retrieves official filing and statutory guidance with citations.
+    """
+    try:
+        guidance = await get_field_guidance(
+            db=db,
+            field_id=request.field_id,
+            section_id=request.section_id,
+            user_query=request.user_query,
+            current_value=request.current_value
+        )
+        return ApiResponse(success=True, data=guidance)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to retrieve guidance: {e}")
+
+@router.post("/{case_id}/guided-form/clarifications", response_model=ApiResponse[GuidedFormState])
+async def resolve_clarification(case_id: UUID, request: ResolveConflictRequest, db: AsyncSession = Depends(get_db_session)):
+    """
+    Resolves fact contradictions or clarification follow-ups.
+    """
+    try:
+        state = await resolve_conflict_item(
+            db=db,
+            case_id=case_id,
+            conflict_id=request.conflict_id,
+            field_id=request.field_id,
+            resolution_choice=request.resolution_choice,
+            resolved_value=request.resolved_value,
+            notes=request.notes
+        )
+        return ApiResponse(success=True, data=state)
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to resolve clarification: {e}")
+
+@router.get("/{case_id}/evidence-checklist", response_model=ApiResponse[List[EvidenceChecklistItem]])
+async def get_evidence_checklist(case_id: UUID, db: AsyncSession = Depends(get_db_session)):
+    """
+    Returns evidence checklist distinguishing mandatory from recommended documents.
+    """
+    try:
+        state = await get_or_initialize_guided_form(db, case_id)
+        return ApiResponse(success=True, data=state.evidence_checklist)
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+@router.post("/{case_id}/guided-form/validate", response_model=ApiResponse[GuidedFormValidationResponse])
+async def validate_form(case_id: UUID, db: AsyncSession = Depends(get_db_session)):
+    """
+    Deterministic validation returning blocking errors, warnings, and pecuniary forum.
+    """
+    try:
+        state = await get_or_initialize_guided_form(db, case_id)
+        validation = validate_guided_form_state(state)
+        return ApiResponse(success=True, data=validation)
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+@router.post("/{case_id}/guided-form/draft")
+async def draft_complaint_from_form(case_id: UUID, db: AsyncSession = Depends(get_db_session)):
+    """
+    Triggers the existing legal drafting pipeline using verified guided form fields.
+    """
+    try:
+        result = await generate_draft_from_guided_form(db, case_id)
+        return ApiResponse(success=True, data=result)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Drafting failed: {e}")
+

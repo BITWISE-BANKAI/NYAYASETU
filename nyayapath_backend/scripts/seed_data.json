@@ -212,16 +212,121 @@
       }
     },
     {
-      "chunk_id": "cpa2019_jurisdiction_CURRENT_PLACEHOLDER",
+      "chunk_id": "cpa2019_jurisdiction_2021_rules_parent",
       "chunk_type": "parent_section",
-      "document_title": "Notification revising pecuniary jurisdiction under CPA 2019",
-      "chunk_text": "[PLACEHOLDER - fetch and replace with the verbatim notification text before ingesting] Per the Central Government notification dated 30 December 2021 (issued under the proviso to Sections 34(1), 47(1)(a)(i) and 58(1)(a)(i) of the CPA 2019): District Commission jurisdiction is revised to complaints where consideration paid does not exceed Rs. 50,00,000 (fifty lakh); State Commission jurisdiction covers consideration exceeding Rs. 50,00,000 but not exceeding Rs. 2,00,00,000 (two crore); National Commission jurisdiction covers consideration exceeding Rs. 2,00,00,000. Source the exact gazette notification text from egazette.gov.in before treating this as production-ready.",
+      "document_title": "Consumer Protection (Jurisdiction of the District Commission, State Commission and National Commission) Rules, 2021",
+      "chunk_text": "Consumer Protection (Jurisdiction of the District Commission, the State Commission and the National Commission) Rules, 2021 (G.S.R. 896(E), notified 30 December 2021 under CPA 2019). Rule 3: District Commission has jurisdiction to entertain complaints where the value of goods or services paid as consideration does not exceed fifty lakh rupees (Rs. 50,00,000). Rule 4: State Commission has jurisdiction where consideration paid exceeds fifty lakh rupees but does not exceed two crore rupees (Rs. 2,00,00,000). Rule 5: National Commission has jurisdiction where consideration paid exceeds two crore rupees. Note: Pecuniary jurisdiction is calculated exclusively on the value of goods or services paid as consideration, not on additional compensation or punitive damages claimed.",
       "metadata": {
         "document_type": "Notification",
-        "hierarchy_path": "Amendment to Sections 34, 47, 58 (Pecuniary jurisdiction - REVISED, effective 2021)",
+        "hierarchy_path": "Consumer Protection Rules, 2021 > Rules 3, 4, 5 (Pecuniary Jurisdiction)",
         "effective_date": "2021-12-30",
         "is_current": true,
-        "jurisdiction": "All"
+        "jurisdiction": "All",
+        "source_url": "https://consumeraffairs.gov.in/pages/consumer-protection-acts"
+      }
+    },
+    {
+      "chunk_id": "cpa2019_jurisdiction_2021_district_rule3",
+      "parent_ref": "cpa2019_jurisdiction_2021_rules_parent",
+      "chunk_type": "child_clause",
+      "document_title": "Consumer Protection (Jurisdiction of the District Commission, State Commission and National Commission) Rules, 2021",
+      "chunk_text": "Rule 3 — Pecuniary Jurisdiction of District Commission. The District Commission shall have jurisdiction to entertain complaints where the value of the goods or services paid as consideration does not exceed fifty lakh rupees (Rs. 50,00,000).",
+      "metadata": {
+        "document_type": "Rules",
+        "hierarchy_path": "Rules 2021 > Rule 3 (District Commission Pecuniary Jurisdiction)",
+        "effective_date": "2021-12-30",
+        "is_current": true,
+        "jurisdiction": "All",
+        "source_url": "https://consumeraffairs.gov.in/pages/consumer-protection-acts"
+      }
+    },
+    {
+      "chunk_id": "ejagriti_filing_guide_parent",
+      "chunk_type": "parent_section",
+      "document_title": "e-Jagriti Online Complaint Filing Guidelines",
+      "chunk_text": "e-Jagriti National Consumer Disputes Redressal Portal — Official Filing Guide for Consumers. e-Jagriti provides end-to-end digital filing of consumer complaints before District, State, and National Consumer Commissions. The portal requires structured information on Complainant, Opposite Parties, Transaction Particulars, Incident Chronology, Grounds of Complaint, Relies Claimed, and Supporting Document Annexures.",
+      "metadata": {
+        "document_type": "Official Guide",
+        "hierarchy_path": "e-Jagriti > General Filing Guidelines",
+        "effective_date": "2023-01-01",
+        "is_current": true,
+        "jurisdiction": "All",
+        "source_url": "https://e-jagriti.gov.in/help-docs"
+      }
+    },
+    {
+      "chunk_id": "ejagriti_complainant_opposite_party_clause",
+      "parent_ref": "ejagriti_filing_guide_parent",
+      "chunk_type": "child_clause",
+      "document_title": "e-Jagriti Online Complaint Filing Guidelines",
+      "chunk_text": "e-Jagriti Guidance on Complainant and Opposite Party Entities. Every consumer complaint must identify the full name, postal address with PIN code, email, and mobile contact of the Complainant. Opposite Parties must be distinguished by their respective commercial role: (1) Registered Merchant / Seller who issued the bill/invoice; (2) Product Manufacturer or Brand owner liable for manufacturing defects; (3) E-Commerce Platform Intermediary if purchased online; (4) Authorized Service Center if warranty service was refused or deficient. Legal addresses must be provided for service of court summons.",
+      "metadata": {
+        "document_type": "Official Guide",
+        "hierarchy_path": "e-Jagriti > Filing Guide > Complainant and Opposite Party Details",
+        "effective_date": "2023-01-01",
+        "is_current": true,
+        "jurisdiction": "All",
+        "source_url": "https://e-jagriti.gov.in/help-docs"
+      }
+    },
+    {
+      "chunk_id": "ejagriti_transaction_product_clause",
+      "parent_ref": "ejagriti_filing_guide_parent",
+      "chunk_type": "child_clause",
+      "document_title": "e-Jagriti Online Complaint Filing Guidelines",
+      "chunk_text": "e-Jagriti Guidance on Transaction Details & Consideration Paid. The complaint form requires product or service description, model/serial identification, purchase or invoice date, invoice number, and exact consideration paid in Indian Rupees (INR). Under the Consumer Protection Rules 2021, the consideration actually paid determines the Pecuniary Jurisdiction of the Commission (District up to Rs. 50 Lakhs). Compensation or damage claims do not alter the pecuniary jurisdiction threshold.",
+      "metadata": {
+        "document_type": "Official Guide",
+        "hierarchy_path": "e-Jagriti > Filing Guide > Transaction Details and Consideration",
+        "effective_date": "2023-01-01",
+        "is_current": true,
+        "jurisdiction": "All",
+        "source_url": "https://e-jagriti.gov.in/help-docs"
+      }
+    },
+    {
+      "chunk_id": "ejagriti_evidence_checklist_clause",
+      "parent_ref": "ejagriti_filing_guide_parent",
+      "chunk_type": "child_clause",
+      "document_title": "e-Jagriti Online Complaint Filing Guidelines",
+      "chunk_text": "e-Jagriti Evidence and Mandatory Annexure Checklist. The following documents must be uploaded and indexed in the Annexures: (1) Mandatory: Tax invoice, purchase bill, cash memo, or proof of payment showing consideration paid; (2) Mandatory: Written grievance notice, email communications, or customer support ticket history showing the seller/manufacturer was notified of the defect; (3) Where applicable: Manufacturer warranty card, service job sheet, technician inspection report, or service refusal report; (4) Helpful supporting evidence: Photographs or videos of physical defect, chat transcripts, payment gateway statements. Each annexure must be referenced in the statement of facts.",
+      "metadata": {
+        "document_type": "Official Guide",
+        "hierarchy_path": "e-Jagriti > Filing Guide > Evidence Checklist & Annexures",
+        "effective_date": "2023-01-01",
+        "is_current": true,
+        "jurisdiction": "All",
+        "source_url": "https://e-jagriti.gov.in/help-docs"
+      }
+    },
+    {
+      "chunk_id": "ejagriti_relief_prayer_clause",
+      "parent_ref": "ejagriti_filing_guide_parent",
+      "chunk_type": "child_clause",
+      "document_title": "e-Jagriti Online Complaint Filing Guidelines",
+      "chunk_text": "e-Jagriti Guidance on Itemized Reliefs (Prayer under Section 39). The complaint must clearly distinguish: (a) Principal statutory remedy: replacement of defective good or full refund of consideration paid with reasonable interest; (b) Compensation: damages for mental harassment, distress, or inconvenience caused by deficiency in service; (c) Litigation expenses: reasonable legal and filing costs. The complainant should not inflate claims arbitrarily; each head of relief must be stated with clarity.",
+      "metadata": {
+        "document_type": "Official Guide",
+        "hierarchy_path": "e-Jagriti > Filing Guide > Relief and Prayer Formulation",
+        "effective_date": "2023-01-01",
+        "is_current": true,
+        "jurisdiction": "All",
+        "source_url": "https://e-jagriti.gov.in/help-docs"
+      }
+    },
+    {
+      "chunk_id": "ejagriti_territorial_jurisdiction_clause",
+      "parent_ref": "ejagriti_filing_guide_parent",
+      "chunk_type": "child_clause",
+      "document_title": "e-Jagriti Online Complaint Filing Guidelines",
+      "chunk_text": "e-Jagriti Territorial Jurisdiction and Limitation Period. Under Section 69 CPA 2019, a complaint must be filed within two (2) years from the date on which the cause of action arose (e.g. date of defect discovery or refusal of warranty). Under Section 34(2), the complaint can be filed in the District Commission where the complainant resides or personally works for gain, or where the cause of action wholly or partially arose, which includes the delivery address in online purchases.",
+      "metadata": {
+        "document_type": "Official Guide",
+        "hierarchy_path": "e-Jagriti > Filing Guide > Territorial Jurisdiction & Limitation",
+        "effective_date": "2023-01-01",
+        "is_current": true,
+        "jurisdiction": "All",
+        "source_url": "https://e-jagriti.gov.in/help-docs"
       }
     }
   ]

@@ -15,6 +15,7 @@ class GrievanceCase(Base):
     structured_slots = Column(JSON, nullable=True)
     rendered_complaint = Column(Text, nullable=True)
     evidence_strength_score = Column(Integer, nullable=True)
+    guided_form_state = Column(JSON, nullable=True)
     
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))

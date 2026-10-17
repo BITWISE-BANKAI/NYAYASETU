@@ -23,6 +23,8 @@ async def seed_database():
     async with engine.begin() as conn:
         await conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector;"))
         await conn.run_sync(Base.metadata.create_all)
+        await conn.execute(text("ALTER TABLE legal_statutes ALTER COLUMN embedding TYPE vector(1024);"))
+        await conn.execute(text("ALTER TABLE grievance_cases ADD COLUMN IF NOT EXISTS guided_form_state JSON;"))
         
     async_session = sessionmaker(
         engine, class_=AsyncSession, expire_on_commit=False
@@ -63,6 +65,10 @@ async def seed_database():
             # Resolve parent_ref if exists
             metadata = item['metadata']
             metadata['chunk_type'] = item['chunk_type']
+            metadata['chunk_id_str'] = item['chunk_id']
+            metadata['document_title'] = item['document_title']
+            if 'source_url' not in metadata:
+                metadata['source_url'] = "https://consumeraffairs.gov.in/pages/consumer-protection-acts"
             
             if 'parent_ref' in item:
                 parent_uuid = id_mapping.get(item['parent_ref'])

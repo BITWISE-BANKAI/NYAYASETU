@@ -120,7 +120,7 @@ def _sanitize_fabricated_identifiers(slots: StructuredLegalSlots):
 
 async def generate_complaint_slots(facts: ExtractedConsumerFacts, retrieved_parents: List[RerankedResult]) -> StructuredLegalSlots:
     """
-    Manages connection to local Ollama instance serving 'nyayapath-drafter'.
+    Manages connection to local Ollama instance serving 'nyaysetu-drafter'.
     Parses and validates response as StructuredLegalSlots via Instructor.
     Runs forbidden-token / consistency gate immediately after parsing.
     """
@@ -137,7 +137,7 @@ async def generate_complaint_slots(facts: ExtractedConsumerFacts, retrieved_pare
     context_statutes = json.dumps([{"text": r.chunk_text, "path": r.hierarchy_path} for r in retrieved_parents])
     
     prompt_content = f"""
-    You are 'nyayapath-drafter', an expert Indian consumer rights legal AI.
+    You are 'nyaysetu-drafter', an expert Indian consumer rights legal AI.
     Generate the StructuredLegalSlots for a formal consumer complaint before the Consumer Disputes Redressal Commission.
     
     CRITICAL LEGAL PLEADING GUIDELINES:

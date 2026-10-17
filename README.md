@@ -1,4 +1,4 @@
-# ⚖️ NyayaPath (न्यायपथ)
+# ⚖️ NyayaSetu (न्यायसेतु)
 ### AI-Powered Consumer Dispute Resolution & Legal Pleading System
 
 [![Python](https://img.shields.io/badge/Python-3.11%2B-blue.svg)](https://www.python.org/)
@@ -7,15 +7,17 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-pgvector-336791.svg)](https://github.com/pgvector/pgvector)
 [![Ollama](https://img.shields.io/badge/Ollama-Local%20LLM-black.svg)](https://ollama.ai/)
 
-**NyayaPath** is a legal AI platform designed specifically for Indian Consumer Protection Law under the **Consumer Protection Act, 2019 (CPA 2019)** and the **Consumer Protection (E-Commerce) Rules, 2020**.
+**NyayaSetu** is a legal AI platform designed specifically for Indian Consumer Protection Law under the **Consumer Protection Act, 2019 (CPA 2019)** and the **Consumer Protection (E-Commerce) Rules, 2020**.
 
-NyayaPath transforms unstructured consumer grievances, invoices, warranty cards, technician job sheets, and communication transcripts into court-ready, formally pleaded petitions for filing before the **District (DCDRC)**, **State (SCDRC)**, or **National (NCDRC)** Consumer Disputes Redressal Commissions.
+NyayaSetu transforms unstructured consumer grievances, invoices, warranty cards, technician job sheets, and communication transcripts into court-ready, formally pleaded petitions for filing before the **District (DCDRC)**, **State (SCDRC)**, or **National (NCDRC)** Consumer Disputes Redressal Commissions.
+
+> 📖 **Looking for a deep-dive walkthrough?** See the [Complete NyayaSetu Walkthrough Guide](docs/walkthrough.md) for both the **User Litigant Journey** and the **System Architect / Engineering Guide**.
 
 ---
 
 ## 🌟 Core Innovations & Legal Engineering
 
-NyayaPath resolves the common pitfalls of naive LLM legal generation through specialized architectural guarantees:
+NyayaSetu resolves the common pitfalls of naive LLM legal generation through specialized architectural guarantees:
 
 1. **Strict Cause-of-Action Pleading Hierarchy**:
    - **Ground 1 (Foundational)**: **Section 2(10) r/w Section 35** — *Defect in Goods* (for hardware, power-board, display, or manufacturing flaws).
@@ -47,6 +49,15 @@ NyayaPath resolves the common pitfalls of naive LLM legal generation through spe
    - Strict ban on forbidden / out-of-context tokens (e.g., `"SWORN BEFORE ME"`, `"District Commissioner"`).
    - Cross-checks dates against the chronological incident timeline.
 
+6. **NyayaSetu Consumer Bridge (Bridge the Gap — Form Filling Assistant)**:
+   - **8-Step Guided Complaint Wizard**: Multi-stage guided form mapping informal grievances into formal court fields.
+   - **Fact Review & Provenance Tracking**: Tracks every field as `confirmed`, `suggested`, `missing`, `conflict`, or `unknown`. Every suggested value displays its source document or narrative provenance; AI-extracted facts are never auto-marked as confirmed.
+   - **Field-Level Contextual RAG Guidance**: On-demand "Explain this field" drawer retrieving grounded guidance from the Consumer Protection Act, 2019 and official e-Jagriti help documents (<https://e-jagriti.gov.in/help-docs>). Displays real statutory citations, effective dates, and URLs with transparent fallback when sources are insufficient.
+   - **Contradiction & Clarification Resolver**: Interactive resolution of conflicting dates or allegations (e.g. consumer account vs opposite party service denial) without silent overwriting.
+   - **Evidence Checklist**: Distinguishes mandatory annexures (Tax Invoice, Notice to Seller) from recommended corroborating evidence (Warranty Card, Service Job Sheet, Photos).
+   - **Deterministic Pecuniary Jurisdiction (2021 Rules)**: Applies the 2021 Rules threshold based strictly on consideration paid (District ≤ ₹50 Lakhs; State ₹50L–₹2Cr; National > ₹2Cr).
+   - **Seamless Legal Drafting Integration**: Connects confirmed guided form fields into NyayaSetu's structured legal drafter, consistency gate, and Jinja2 court petition template.
+
 ---
 
 ## 🏛️ System Architecture
@@ -67,16 +78,26 @@ NyayaPath resolves the common pitfalls of naive LLM legal generation through spe
                                               │
                                               ▼
                        ┌──────────────────────────────────────────────┐
+                       │       NyayaSetu Consumer Bridge (New)        │
+                       │  - Guided Form Wizard (8 Stepper Stages)     │
+                       │  - Fact Provenance & Confirmation Store      │
+                       │  - Field-Level RAG Guidance & Citations      │
+                       │  - Evidence Checklist & Conflict Resolution  │
+                       │  - Deterministic Pecuniary Jurisdiction (2021│
+                       └──────────────────────┬───────────────────────┘
+                                              │
+                                              ▼
+                       ┌──────────────────────────────────────────────┐
                        │    Stage 3: Hybrid RAG & InLegalBERT Rerank  │
                        │  - pgvector Embedding Search (qwen3-embed)   │
                        │  - Hierarchy Parent Chunk Reconstruction     │
-                       │  - law-ai/InLegalBERT Bi-Encoder Reranking   │
+                       │  - Official e-Jagriti & CPA 2019 Corpus      │
                        └──────────────────────┬───────────────────────┘
                                               │
                                               ▼
                        ┌──────────────────────────────────────────────┐
                        │       Stage 4: Structured Legal Drafter      │
-                       │  - nyayapath-drafter (Local LLM via Ollama)  │
+                       │  - nyaysetu-drafter (Local LLM via Ollama)  │
                        │  - StructuredLegalSlots Generation           │
                        │  - Post-Generation Consistency Gate & Retry  │
                        │  - Synthetic ID Sanitization                 │
@@ -97,16 +118,21 @@ NyayaPath resolves the common pitfalls of naive LLM legal generation through spe
 
 ### Backend
 - **Framework**: Python 3.11+, FastAPI, Uvicorn
-- **Database & Search**: PostgreSQL with `pgvector` extension, SQLAlchemy Async, Alembic
-- **LLM & Structured Output**: Ollama, Instructor, OpenAI Python SDK
+- **Database & Search**: PostgreSQL 16 with `pgvector` extension, SQLAlchemy Async, Alembic
+- **LLM & Structured Output**: Ollama (local), Instructor, OpenAI Python SDK
 - **Models**:
-  - `qwen2.5:3b-instruct-q4_K_M` (Fact Extraction)
-  - `nyayapath-drafter` / `qwen2.5:7b-instruct` (Legal Drafting)
-  - `qwen3-embedding:0.6b` (Dense Statute Embeddings)
-  - `law-ai/InLegalBERT` (Transformer Reranker)
+  - `qwen2.5:3b-instruct` / `qwen2.5:3B-instruct` (Fact Extraction & Field RAG Explanation)
+  - `nyaysetu-drafter` / `qwen2.5:7b-instruct` (Legal Drafting)
+  - `qwen3-embedding:0.6b` (Statute & Official Filing Embeddings, 1024-dim)
+  - `law-ai/InLegalBERT` (Optional Bi-Encoder Reranker)
 - **Templating & Validation**: Jinja2, Pydantic V2, Pytest
 
 ### Frontend
+- **Framework**: React 18 / 19, Vite, React Router DOM 7
+- **Styling**: Vanilla CSS design tokens (`index.css`), Manrope typography, Soft Neumorphic UI (`#EEF1F6` base, dual shadows)
+- **Design System**: Connected Stitch MCP project `projects/8703302765528619586` ("NyayaSetu Consumer Rights Navigator"), Screen `75f0499587c940c6b6e903a47bef68fc` ("NyayaSetu | Guided Complaint Wizard")
+- **Icons & UI**: Lucide React
+- **Features**: Guided Complaint Wizard, Field-level RAG legal grounding drawer, Provenance badges, Contradiction resolver, Evidence checklist, Complaint preview/download.
 - **Framework**: React 18, Vite
 - **Styling**: Tailwind CSS, Modern Neumorphic / Glassmorphic UI
 - **Icons & UI**: Lucide React
@@ -117,11 +143,11 @@ NyayaPath resolves the common pitfalls of naive LLM legal generation through spe
 ## 📁 Repository Structure
 
 ```
-nyaypath/
+nyaysetu/
 ├── .gitignore                      # Root gitignore for Python, Node, DB & secrets
 ├── README.md                       # Project documentation
 │
-├── nyayapath_backend/              # FastAPI Backend Service
+├── nyaysetu_backend/              # FastAPI Backend Service
 │   ├── api/                        # REST API routes
 │   │   └── v1/
 │   │       ├── endpoints_cases.py  # Case intake, status & pipeline triggers
@@ -152,7 +178,7 @@ nyaypath/
 │   ├── requirements.txt            # Python dependencies
 │   └── main.py                     # FastAPI application entrypoint
 │
-└── nyayapath_frontend/             # React + Vite Frontend
+└── nyaysetu_frontend/             # React + Vite Frontend
     ├── src/
     │   ├── components/             # Reusable UI components & forms
     │   ├── App.jsx                 # Main application view & pipeline UI
@@ -184,7 +210,7 @@ ollama pull qwen3-embedding:0.6b
 
 1. **Navigate to the backend directory and activate virtual environment**:
    ```bash
-   cd nyayapath_backend
+   cd nyaysetu_backend
    python -m venv .venv
    
    # Windows:
@@ -223,7 +249,7 @@ ollama pull qwen3-embedding:0.6b
 
 1. **Navigate to the frontend directory**:
    ```bash
-   cd ../nyayapath_frontend
+   cd ../nyaysetu_frontend
    ```
 
 2. **Install dependencies and start Vite dev server**:
@@ -237,17 +263,40 @@ ollama pull qwen3-embedding:0.6b
 
 ## 🧪 Running Automated Tests
 
-NyayaPath includes regression tests and consistency validation via Pytest:
+NyayaSetu includes a full automated test suite covering regression tests, golden set consistency, guided form provenance, 2021 pecuniary rules, and API integration:
 
 ```bash
-cd nyayapath_backend
-pytest tests/test_golden_set.py -v
+# Run backend test suite (golden set + guided form + retrieval + API flow):
+cd nyaysetu_backend
+pytest tests/ -v
+
+# Run frontend build and linter:
+cd ../nyaysetu_frontend
+npm run lint
+npm run build
 ```
 
 ---
 
-## 🛡️ Security & Privacy Notice
+## 📚 Seeding & Updating the Official Legal Corpus
+
+The hybrid RAG store indexes official provisions of the Consumer Protection Act, 2019, E-Commerce Rules 2020, 2021 Pecuniary Jurisdiction Rules, and official e-Jagriti filing guidance:
+
+```bash
+cd nyaysetu_backend
+python scripts/seed_db.py
+```
+Source materials indexed:
+- Department of Consumer Affairs CPA 2019 & Rules: <https://consumeraffairs.gov.in/pages/consumer-protection-acts>
+- Official e-Jagriti Online Complaint Filing Guidelines: <https://e-jagriti.gov.in/help-docs>
+
+---
+
+## 🛡️ Security, Privacy & Legal Limitations Notice
 - **All model inferences run locally** via Ollama and local HuggingFace transformers. No confidential consumer grievance data or personal invoices are transmitted to third-party proprietary LLM APIs.
+- **Informational Assistant Only**: NyayaSetu prepares and structures case materials for review; it does not constitute legal counsel, guarantee complaint acceptance, or predict case outcome.
+- **No Direct Filing Claim**: The application does not automatically submit cases to e-Jagriti. Final filing remains the user's action on official government portals.
+- **Zero Fabrication**: Unknown identifiers, dates, and amounts are flagged as unknown or cited with standard disclaimers, never invented.
 - The root `.gitignore` protects against accidental commit of `.env`, database dumps, uploaded receipts, and cached embeddings.
 
 ---

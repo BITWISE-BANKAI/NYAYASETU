@@ -5,7 +5,7 @@ from core.database import engine, init_db
 from api.v1.router import api_router
 
 app = FastAPI(
-    title="NyayaPath API",
+    title="NyayaSetu API",
     description="AI-Powered Consumer Rights Navigator for India",
     version="1.0.0",
 )

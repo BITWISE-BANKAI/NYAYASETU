@@ -5,6 +5,7 @@ import { Landing } from './pages/Landing';
 import { Intake } from './pages/Intake';
 import { EvidenceUpload } from './pages/EvidenceUpload';
 import { Dashboard } from './pages/Dashboard';
+import { GuidedForm } from './pages/GuidedForm';
 
 function App() {
   return (
@@ -15,6 +16,8 @@ function App() {
           <Route path="intake" element={<Intake />} />
           <Route path="upload" element={<EvidenceUpload />} />
           <Route path="dashboard/:caseId" element={<Dashboard />} />
+          <Route path="guided-form/:caseId" element={<GuidedForm />} />
+          <Route path="cases/:caseId/guided-form" element={<GuidedForm />} />
         </Route>
       </Routes>
     </BrowserRouter>

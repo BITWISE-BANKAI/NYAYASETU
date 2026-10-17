@@ -4,7 +4,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import text
 from schemas.legal_retrieval import RerankedResult
 import ollama
-from sentence_transformers import SentenceTransformer, util
 from core.config import settings
 
 logger = logging.getLogger(__name__)
@@ -12,12 +11,14 @@ logger = logging.getLogger(__name__)
 class RetrievalError(Exception):
     pass
 
-# Initialize InLegalBERT as a SentenceTransformer for bi-encoder reranking
+# Initialize InLegalBERT as a SentenceTransformer for bi-encoder reranking if available
 try:
+    from sentence_transformers import SentenceTransformer, util
     reranker_model = SentenceTransformer("law-ai/InLegalBERT")
 except Exception as e:
-    logger.error(f"Failed to load InLegalBERT: {e}")
+    logger.info(f"InLegalBERT reranker not loaded (optional component): {e}")
     reranker_model = None
+    util = None
 
 async def retrieve_parent_statutes(db: AsyncSession, query_text: str, top_k: int = 20, rerank_top_k: int = 3) -> List[RerankedResult]:
     """
@@ -77,8 +78,8 @@ async def retrieve_parent_statutes(db: AsyncSession, query_text: str, top_k: int
             cross_encoder_score=float(score)
         ))
         
-    # Sort by cross_encoder_score descending
-    reranked_chunks.sort(key=lambda x: x.cross_encoder_score, reverse=True)
+    # Sort by cross_encoder_score descending, falling back to pgvector similarity_score
+    reranked_chunks.sort(key=lambda x: (x.cross_encoder_score, x.similarity_score), reverse=True)
     
     return reranked_chunks[:rerank_top_k]
 

@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { NeuCard } from '../components/ui/NeuCard';
 import { NeuButton } from '../components/ui/NeuButton';
 
 export function Dashboard() {
   const { caseId } = useParams();
+  const navigate = useNavigate();
   const [status, setStatus] = useState('stage2_extraction');
   const [complaintData, setComplaintData] = useState(null);
 
@@ -74,8 +75,35 @@ export function Dashboard() {
     );
   }
 
+  const handleDownload = () => {
+    if (!complaintData?.rendered_complaint) return;
+    const blob = new Blob([complaintData.rendered_complaint], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `NyayaSetu_Complaint_${caseId.slice(0, 8)}.txt`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
-    <div className="container flex-col animate-fade-in" style={{ gap: '48px' }}>
+    <div className="container flex-col animate-fade-in" style={{ gap: '32px' }}>
+      
+      {/* Consumer Bridge Banner */}
+      <div className="neu-card flex justify-between items-center" style={{ padding: '20px 28px', borderRadius: '16px', background: '#eef1f6', boxShadow: 'var(--shadow-raised)', flexWrap: 'wrap', gap: '16px' }}>
+        <div>
+          <div style={{ fontWeight: '700', fontSize: '16px', color: 'var(--color-understand)' }}>
+            ✦ NyayaSetu Consumer Bridge: Guided Form Experience
+          </div>
+          <p className="text-helper" style={{ margin: '4px 0 0 0' }}>
+            Review extracted facts, confirm provenance, resolve conflicting claims, and ask AI for official legal explanations.
+          </p>
+        </div>
+        <NeuButton variant="act" onClick={() => navigate(`/guided-form/${caseId}`)}>
+          Open Guided Complaint Assistant →
+        </NeuButton>
+      </div>
+
       <div className="flex gap-4">
         
         {/* Left Column: Summary & Evidence */}
@@ -112,7 +140,9 @@ export function Dashboard() {
           <NeuCard>
             <div className="flex justify-between items-center" style={{ marginBottom: '24px' }}>
               <h3 className="text-card-title">Review your complaint</h3>
-              <NeuButton variant="primary">Download Complaint</NeuButton>
+              <NeuButton variant="primary" onClick={handleDownload}>
+                Download Complaint
+              </NeuButton>
             </div>
             <p className="text-helper" style={{ marginBottom: '24px' }}>
               This is a draft to help you file — not legal advice. Please review all details before submitting.

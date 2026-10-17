@@ -5,7 +5,15 @@ class ExtractedConsumerFacts(BaseModel):
     product_or_service: Optional[str] = Field(default=None, description="Item / model / brand involved.")
     transaction_amount_inr: Optional[float] = Field(default=None, description="Normalized numeric INR value (e.g. '45 hazaar' -> 45000).")
     purchase_or_incident_date: Optional[str] = Field(default=None, description="ISO date or relative timeframe if exact date is missing.")
+    invoice_number: Optional[str] = Field(default=None, description="Tax invoice / receipt number if explicitly provided.")
     seller_or_company_name: Optional[str] = Field(default=None, description="Primary merchant / manufacturer / platform name.")
+    
+    # Complainant identification
+    complainant_name: Optional[str] = Field(default=None, description="Full legal name of complainant.")
+    complainant_address: Optional[str] = Field(default=None, description="Postal address of complainant.")
+    complainant_phone: Optional[str] = Field(default=None, description="Phone contact of complainant.")
+    complainant_email: Optional[str] = Field(default=None, description="Email address of complainant.")
+    complainant_city: Optional[str] = Field(default=None, description="Complainant city/district for forum jurisdiction.")
     
     # Multi-party entity breakdown
     ecommerce_platform: Optional[str] = Field(default=None, description="Marketplace platform if bought online (e.g. Amazon, Flipkart).")

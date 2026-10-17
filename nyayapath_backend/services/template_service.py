@@ -61,8 +61,8 @@ def render_final_dcdrc_complaint(facts: ExtractedConsumerFacts, slots: Structure
 
     rendered_complaint = template.render(
         forum_name=forum_info["forum_name"],
-        forum_city="[INSERT CITY]",
-        complainant_name="[INSERT COMPLAINANT NAME]",
+        forum_city=getattr(facts, "complainant_city", None) or "[INSERT CITY]",
+        complainant_name=getattr(facts, "complainant_name", None) or "[INSERT COMPLAINANT NAME]",
         seller_name=facts.seller_or_company_name or "[INSERT SELLER NAME]",
         opposite_parties=opposite_parties,
         transaction_amount=facts.transaction_amount_inr,
